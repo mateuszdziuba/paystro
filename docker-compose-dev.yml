@@ -1,0 +1,22 @@
+services:
+  astro:
+    build:
+      target: dev
+    volumes:
+      - ./astro:/base
+      - /base/node_modules/
+    ports:
+      - 4321:4321
+
+  payload:
+    build:
+      target: dev
+    volumes:
+      - ./payload/src:/base/src
+      - ./astro/src/types.ts:/types.ts
+    ports:
+      - 3000:3000
+
+  postgres:
+    ports:
+      - 5432:5432

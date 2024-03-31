@@ -1,0 +1,48 @@
+services:
+  astro:
+    container_name: ${NAME}-astro
+    restart: unless-stopped
+    build:
+      context: astro
+    networks:
+      - front
+    depends_on:
+      - payload
+
+  payload:
+    container_name: ${NAME}-payload
+    restart: unless-stopped
+    build:
+      context: payload
+    environment:
+      NAME: ${NAME}
+      PAYLOAD_URL: ${PAYLOAD_URL}
+      PAYLOAD_PORT: ${PAYLOAD_PORT}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      DATABASE_URI: ${POSTGRES_URI}
+      TOKEN: ${TOKEN}
+    networks:
+      - front
+      - back
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: ${NAME}-postgres
+    image: postgres
+    restart: always
+    volumes:
+      - ./pgdata:/data/postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PW}
+      DATABASE_URI: ${POSTGRES_URI}
+      POSTGRES_DB: paystro
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    networks:
+      - back
+
+networks:
+  front:
+  back:
